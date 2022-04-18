@@ -1,3 +1,4 @@
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -11,16 +12,15 @@ int result = 0;
 pthread_mutex_t lock;
 
 void *threadHandler(void *ptr) {
-    pthread_mutex_lock(&lock);
     for (int k = 0; k < 10; k++) {
 	printf("%li ", *((long*)ptr));
     	for (int j = 0; j < 1000000; ++j) {	
+	    pthread_mutex_lock(&lock);
 	    result++;
+	    pthread_mutex_unlock(&lock);
 	}
     }
-    pthread_mutex_unlock(&lock);
     pthread_exit(0);
-    return NULL;
 }
 int main(int argc, char *argv[]) {
     if (argc == 1) {
@@ -35,9 +35,6 @@ int main(int argc, char *argv[]) {
 	printf("\n mutex init failed\n");
 	return 1;
     }
-
-   // int THREADS = atoi(argv[1]);
-   // pthread_t threads[THREADS];
 
     for (int i = 0; i < THREADS; ++i) {
         long *s = malloc(sizeof(s));
